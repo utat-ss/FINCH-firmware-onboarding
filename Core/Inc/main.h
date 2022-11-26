@@ -61,8 +61,8 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define B1_Pin GPIO_PIN_13
 #define B1_GPIO_Port GPIOC
-#define Green_LED_Pin GPIO_PIN_0
-#define Green_LED_GPIO_Port GPIOB
+//#define Green_LED_Pin GPIO_PIN_0
+//#define Green_LED_GPIO_Port GPIOB
 #define LD1_Pin GPIO_PIN_14
 #define LD1_GPIO_Port GPIOB
 #define STLINK_TX_Pin GPIO_PIN_9

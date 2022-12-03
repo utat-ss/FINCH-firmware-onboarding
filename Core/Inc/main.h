@@ -61,10 +61,10 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define B1_Pin GPIO_PIN_13
 #define B1_GPIO_Port GPIOC
-//#define Green_LED_Pin GPIO_PIN_0
-//#define Green_LED_GPIO_Port GPIOB
-#define LD1_Pin GPIO_PIN_14
-#define LD1_GPIO_Port GPIOB
+#define Green_LED_Pin GPIO_PIN_0
+#define Green_LED_GPIO_Port GPIOB
+#define LD3_Pin GPIO_PIN_14
+#define LD3_GPIO_Port GPIOB
 #define STLINK_TX_Pin GPIO_PIN_9
 #define STLINK_TX_GPIO_Port GPIOD
 #define USB_OTG_FS_PWR_EN_Pin GPIO_PIN_10
@@ -73,8 +73,6 @@ void Error_Handler(void);
 #define USB_OTG_FS_OVCR_GPIO_Port GPIOG
 #define LD2_Pin GPIO_PIN_1
 #define LD2_GPIO_Port GPIOE
-#define LD3_Pin GPIO_PIN_14
-#define LD3_GPIO_Port GPIOF
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

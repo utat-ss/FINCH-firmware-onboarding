@@ -42,6 +42,8 @@
 
 HRTIM_HandleTypeDef hhrtim;
 
+TIM_HandleTypeDef htim16;
+
 PCD_HandleTypeDef hpcd_USB_OTG_FS;
 
 /* USER CODE BEGIN PV */
@@ -53,6 +55,7 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USB_OTG_FS_PCD_Init(void);
 static void MX_HRTIM_Init(void);
+static void MX_TIM16_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -69,6 +72,8 @@ static void MX_HRTIM_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+
+	uinit16_t timer_val;
 
   /* USER CODE END 1 */
 
@@ -92,8 +97,10 @@ int main(void)
   MX_GPIO_Init();
   MX_USB_OTG_FS_PCD_Init();
   MX_HRTIM_Init();
+  MX_TIM16_Init();
   /* USER CODE BEGIN 2 */
-
+  	  HAL_TIM_Base_Start(&htim16);
+  	  timer_val = __HAL_TIM_GET_COUNTER(&htim16);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -103,58 +110,64 @@ int main(void)
   int B1_count = 1; //Number of times B1 had been pressed
   int x = 1;
 
-  while( (x = 1) )	{
+  while(x == 1)	{
 //  static unsigned short pin_state = 0;
 
-	  if(B1_count = 1){
+	  if(B1_count == 1){
 
 	 	  //Turn LED1 ON
 	 	  //HAL_GPIO_WritePin(GPIOA, LD1_Pin, GPIO_PIN_SET);
 
 	 	  //Turn LED3 OFF
-	 	  HAL_GPIO_WritePin(GPIOF, LD3_Pin, GPIO_PIN_RESET);
+	 	  HAL_GPIO_WritePin(LD3_Pin, GPIO_PIN_RESET);
 
 	 	  //Toggle LD1
-	 	  while( (B1_count = 1) )	{
-	 		  HAL_GPIO_TogglePin (GPIOB, LD1_Pin);
-	 		  HAL_Delay (1000);
-	 		  if(HAL_GPIO_ReadPin (GPIOC, B1_Pin|GPIO_PIN_13)){
+	 	  while(B1_count == 1)	{
+	 		  if ((__HAL_TIM_GET_COUNTER(&htim16) - timer_val) >= 5000){
+	 			  HAL_GPIO_TogglePin (LD1_Pin);
+	 			  timer_val = __HAL_TIM_GET_COUNTER(&htim16);
+	 		  }
+	 		  if(HAL_GPIO_ReadPin (B1_Pin)){
 	 			  B1_count = 2;
 	 			  break; //Redundancy
 	 		  }
 	 	  }
   	  }
 
-	  if(B1_count = 2){
+	  if(B1_count == 2){
 		  //Turn LED2 ON
  	  	  //HAL_GPIO_WritePin(GPIOE, LD2_Pin, GPIO_PIN_SET);
 
  	  	  //Turn LED1 OFF
- 	  	  HAL_GPIO_WritePin(GPIOA, LD1_Pin, GPIO_PIN_RESET);
+ 	  	  HAL_GPIO_WritePin(LD1_Pin, GPIO_PIN_RESET);
 
 	 	  //Toggle LD2
-	 	  while( (B1_count = 2) )	{
-	 		  HAL_GPIO_TogglePin (GPIOE, LD2_Pin);
-	 		  HAL_Delay (500);
-	 		  if(HAL_GPIO_ReadPin (GPIOC, B1_Pin|GPIO_PIN_13)){
+	 	  while(B1_count == 2)	{
+	 		  if ((__HAL_TIM_GET_COUNTER(&htim16) - timer_val) >= 2500){
+	 			  HAL_GPIO_TogglePin (LD2_Pin);
+	 			  timer_val = __HAL_TIM_GET_COUNTER(&htim16);
+	 		  }
+	 		  if(HAL_GPIO_ReadPin (B1_Pin)){
 	 			  B1_count = 3;
 	 			  break; //Redundancy
 	 		  }
 	 	  }
 
 	  }
-	  if(B1_count = 3){
+	  if(B1_count == 3){
 		  //Turn LED3 ON
  	  	  //HAL_GPIO_WritePin(GPIOB, LD3_Pin, GPIO_PIN_SET);
 
  	  	  //Turn LED2 OFF
- 	  	  HAL_GPIO_WritePin(GPIOE, LD2_Pin, GPIO_PIN_RESET);
+ 	  	  HAL_GPIO_WritePin(LD2_Pin, GPIO_PIN_RESET);
 
 	 	  //Toggle LD3
-	 	  while( (B1_count = 3) )	{
-	 		  HAL_GPIO_TogglePin (GPIOF, LD3_Pin);
-	 		  HAL_Delay (250);
-	 		  if(HAL_GPIO_ReadPin (GPIOC, B1_Pin|GPIO_PIN_13)){
+	 	  while(B1_count == 3)	{
+	 		  if ((__HAL_TIM_GET_COUNTER(&htim16) - timer_val) >= 1250){
+	 			  HAL_GPIO_TogglePin (LD3_Pin);
+	 			  timer_val = __HAL_TIM_GET_COUNTER(&htim16);
+	 		  }
+	 		  if(HAL_GPIO_ReadPin (B1_Pin)){
 	 			  B1_count = 1;
 	 			  break; //Redundancy
 	 		  }
@@ -168,7 +181,7 @@ int main(void)
   }
 
   /* USER CODE END 3 */
-
+}
 
 /**
   * @brief System Clock Configuration
@@ -387,6 +400,38 @@ static void MX_HRTIM_Init(void)
 }
 
 /**
+  * @brief TIM16 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM16_Init(void)
+{
+
+  /* USER CODE BEGIN TIM16_Init 0 */
+
+  /* USER CODE END TIM16_Init 0 */
+
+  /* USER CODE BEGIN TIM16_Init 1 */
+
+  /* USER CODE END TIM16_Init 1 */
+  htim16.Instance = TIM16;
+  htim16.Init.Prescaler = 8000 - 1;
+  htim16.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim16.Init.Period = 65535;
+  htim16.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim16.Init.RepetitionCounter = 0;
+  htim16.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim16) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM16_Init 2 */
+
+  /* USER CODE END TIM16_Init 2 */
+
+}
+
+/**
   * @brief USB_OTG_FS Initialization Function
   * @param None
   * @retval None
@@ -441,16 +486,13 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOE_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  //HAL_GPIO_WritePin(GPIOB, Green_LED_Pin|LD1_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOB, Green_LED_Pin|LD3_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(USB_OTG_FS_PWR_EN_GPIO_Port, USB_OTG_FS_PWR_EN_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  //HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
-
-  //HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
-
+  HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin : B1_Pin */
   GPIO_InitStruct.Pin = B1_Pin;
@@ -474,8 +516,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Alternate = GPIO_AF11_ETH;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : Green_LED_Pin LD1_Pin */
-  GPIO_InitStruct.Pin = LD1_Pin;
+  /*Configure GPIO pins : Green_LED_Pin LD3_Pin */
+  GPIO_InitStruct.Pin = Green_LED_Pin|LD3_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -533,13 +575,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : LD3_Pin */
-    GPIO_InitStruct.Pin = LD3_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    HAL_GPIO_Init(LD3_GPIO_Port, &GPIO_InitStruct);
-
 }
 
 /* USER CODE BEGIN 4 */
@@ -577,4 +612,3 @@ void assert_failed(uint8_t *file, uint32_t line)
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
-//n-
